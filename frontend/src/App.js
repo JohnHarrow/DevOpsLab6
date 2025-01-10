@@ -26,7 +26,7 @@ function App() {
       <h1>Videos</h1>
       <ul>
         {videos.map(video => (
-          <li key={video.id}>{video.title}</li>
+          <li key={video.id}>{video.title}, Genre: {video.genre}</li>
         ))}
       </ul>
     </div>
