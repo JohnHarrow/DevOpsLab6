@@ -149,6 +149,8 @@ jobs:
             docker rm -f api-gateway || true
             docker rm -f frontend || true
 
+            docker system prune -f || true
+
             echo "Pulling latest Docker images..."
             docker pull ${{ secrets.DOCKER_USERNAME }}/user-service:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/video-service:latest
