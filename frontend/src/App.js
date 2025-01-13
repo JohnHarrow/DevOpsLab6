@@ -18,18 +18,24 @@ function App() {
   return (
     <div>
       <h1>Users</h1>
-      <h1>Test</h1>
-      <img src="https://bucket-for-assignment-2.s3.us-east-1.amazonaws.com/78c77e9ffd17bfd8dad1d4eb79a981a0.jpg" alt="S3 Hosted Image"></img>
-      <h1>Test</h1>
       <ul>
         {users.map(user => (
           <li key={user.id}>{user.name} ({user.email}), Age: {user.age}</li>
         ))}
       </ul>
+
       <h1>Videos</h1>
       <ul>
-        {videos.map(video => (
-          <li key={video.id}>{video.title}, Genre: {video.genre}</li>
+        {videos.map((video) => (
+          <li key={video.id}>
+            <h2>{video.title}</h2>
+            <p>Genre: {video.genre}</p>
+            {/* Display the video */}
+            <video width="600" controls>
+              <source src={video.s3Url} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </li>
         ))}
       </ul>
     </div>
