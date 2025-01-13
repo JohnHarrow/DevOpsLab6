@@ -7,6 +7,11 @@ const videos = [
   { id: 2, title: 'Microservices with Node.js', genre: 'Slightly More Boring' }
 ];  
  
+//
+const cors = require('cors');
+app.use(cors()); // This enables CORS
+//
+
 app.get('/videos', (req, res) => {
   res.json(videos);
 });  
