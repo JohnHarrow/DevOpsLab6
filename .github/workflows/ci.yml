@@ -27,7 +27,7 @@ jobs:
         working-directory: ./user-service
 
       - name: Build Docker image
-        run: docker build -t user-service ./user-service
+        run: docker build --pull=always -t user-service ./user-service  # Ensure pulling fresh images
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -55,7 +55,7 @@ jobs:
         working-directory: ./video-service
 
       - name: Build Docker image
-        run: docker build -t video-service ./video-service
+        run: docker build --pull=always -t video-service ./video-service  # Ensure pulling fresh images
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -83,7 +83,7 @@ jobs:
         working-directory: ./api-gateway
 
       - name: Build Docker image
-        run: docker build -t api-gateway ./api-gateway
+        run: docker build --pull=always -t api-gateway ./api-gateway  # Ensure pulling fresh images
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -111,7 +111,7 @@ jobs:
         working-directory: ./frontend
 
       - name: Build Docker image
-        run: docker build -t frontend ./frontend
+        run: docker build --pull=always -t frontend ./frontend  # Ensure pulling fresh images
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -137,27 +137,27 @@ jobs:
       - name: SSH into EC2 and Deploy Docker Containers
         run: |
           ssh -i /tmp/id_rsa -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            # Stop existing containers (if running)
+            echo "Stopping and removing old containers..."
             docker stop user-service || true
             docker stop video-service || true
             docker stop api-gateway || true
             docker stop frontend || true
 
-            # Remove old containers (if stopped)
-            docker rm user-service || true
-            docker rm video-service || true
-            docker rm api-gateway || true
-            docker rm frontend || true
+            # Force remove the stopped containers to avoid any stale instances
+            docker rm -f user-service || true
+            docker rm -f video-service || true
+            docker rm -f api-gateway || true
+            docker rm -f frontend || true
 
-            # Pull latest images from Docker Hub
+            echo "Pulling latest Docker images..."
             docker pull ${{ secrets.DOCKER_USERNAME }}/user-service:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/video-service:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:latest
 
-            # Run new containers with dynamic port allocation to avoid conflicts
-            docker run -d --name user-service -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/user-service:latest || echo "Port 3000 is in use"
-            docker run -d --name video-service -p 3001:3001 ${{ secrets.DOCKER_USERNAME }}/video-service:latest || echo "Port 3001 is in use"
-            docker run -d --name api-gateway -p 3002:3002 ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest || echo "Port 3002 is in use"
-            docker run -d --name frontend -p 3003:3000 ${{ secrets.DOCKER_USERNAME }}/frontend:latest || echo "Port 3003 is in use"
+            echo "Running new containers..."
+            docker run -d --name user-service -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/user-service:latest
+            docker run -d --name video-service -p 3001:3001 ${{ secrets.DOCKER_USERNAME }}/video-service:latest
+            docker run -d --name api-gateway -p 3002:3002 ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
+            docker run -d --name frontend -p 3003:3000 ${{ secrets.DOCKER_USERNAME }}/frontend:latest
           EOF
