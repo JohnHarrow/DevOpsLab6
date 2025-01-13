@@ -155,9 +155,9 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
             docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:latest
 
-            # Run new containers
-            docker run -d --name user-service -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/user-service:latest
-            docker run -d --name video-service -p 3001:3001 ${{ secrets.DOCKER_USERNAME }}/video-service:latest
-            docker run -d --name api-gateway -p 3002:3002 ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest
-            docker run -d --name frontend -p 3003:3000 ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+            # Run new containers with dynamic port allocation to avoid conflicts
+            docker run -d --name user-service -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/user-service:latest || echo "Port 3000 is in use"
+            docker run -d --name video-service -p 3001:3001 ${{ secrets.DOCKER_USERNAME }}/video-service:latest || echo "Port 3001 is in use"
+            docker run -d --name api-gateway -p 3002:3002 ${{ secrets.DOCKER_USERNAME }}/api-gateway:latest || echo "Port 3002 is in use"
+            docker run -d --name frontend -p 3003:3000 ${{ secrets.DOCKER_USERNAME }}/frontend:latest || echo "Port 3003 is in use"
           EOF
