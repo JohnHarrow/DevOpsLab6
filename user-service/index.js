@@ -7,11 +7,6 @@ const users = [
   { id: 2, name: 'Jane Smith', email: 'jane@example.com', age: 25 }
   ];
 
-//
-const cors = require('cors');
-app.use(cors()); // This enables CORS
-//
-
 app.get('/users', (req, res) => {
   res.json(users);
 });  
