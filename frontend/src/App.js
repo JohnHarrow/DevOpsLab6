@@ -6,11 +6,11 @@ function App() {
   const [videos, setVideos] = useState([]);
 
   useEffect(() => {
-    axios.get('http://3.83.219.157:3002/api/users')
+    axios.get('http://3.82.223.111 :3002/api/users')
       .then(response => setUsers(response.data))
       .catch(error => console.log('Error:', error));
 
-    axios.get('http://3.83.219.157:3002/api/videos')
+    axios.get('http://3.82.223.111 :3002/api/videos')
       .then(response => setVideos(response.data))
       .catch(error => console.log('Error:', error));
   }, []);
